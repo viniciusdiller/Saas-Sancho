@@ -42,7 +42,15 @@ export default async function FinancePage() {
     );
   }
 
-  const [reservations, expenses] = await Promise.all([getReservations(session.tenantId), getExpenses(session.tenantId)]);
+  let reservations = [] as Awaited<ReturnType<typeof getReservations>>;
+  let expenses = [] as Awaited<ReturnType<typeof getExpenses>>;
+  let dataError: string | null = null;
+
+  try {
+    [reservations, expenses] = await Promise.all([getReservations(session.tenantId), getExpenses(session.tenantId)]);
+  } catch (error) {
+    dataError = error instanceof Error ? error.message : 'Falha ao carregar os dados financeiros.';
+  }
   const grossRevenue = reservations
     .filter((reservation) => reservation.status !== 'cancelled' && reservation.status !== 'blocked')
     .reduce((total, reservation) => total + reservation.amount, 0);
@@ -60,6 +68,12 @@ export default async function FinancePage() {
           <ExpenseModalForm />
         </div>
       </section>
+
+      {dataError ? (
+        <section className="rounded-[28px] border border-rose-400/30 bg-rose-500/10 p-6 text-rose-200">
+          Não foi possível carregar os dados financeiros agora. {dataError}
+        </section>
+      ) : null}
 
       <section className="grid gap-4 xl:grid-cols-3">
         <div className="rounded-[28px] border border-white/10 bg-slate-900/80 p-6 text-white">Faturamento Bruto: {formatCurrency(grossRevenue)}</div>

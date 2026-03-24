@@ -5,9 +5,21 @@ import { Room } from '@/models/Room';
 import { Tenant } from '@/models/Tenant';
 import { User } from '@/models/User';
 
+function loadMysqlDialectModule() {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require('mysql2');
+  } catch {
+    throw new Error(
+      'Dependência "mysql2" não encontrada. Execute "npm install" para instalar as dependências do projeto.',
+    );
+  }
+}
+
 export function createSequelizeClient() {
   return new Sequelize({
     dialect: 'mysql',
+    dialectModule: loadMysqlDialectModule(),
     host: process.env.DB_HOST ?? 'localhost',
     port: Number(process.env.DB_PORT ?? 3306),
     database: process.env.DB_NAME ?? 'channel_manager',

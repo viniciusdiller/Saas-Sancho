@@ -153,10 +153,18 @@ export function UnifiedCalendar() {
   useEffect(() => {
     async function loadData() {
       setLoading(true);
-      const response = await fetch('/api/tenant/inventory');
-      const payload = (await response.json()) as { rooms: Room[]; reservations: Reservation[] };
-      setRooms(payload.rooms);
-      setReservations(payload.reservations);
+      try {
+        const response = await fetch('/api/tenant/inventory');
+        if (!response.ok) {
+          throw new Error('Não foi possível carregar o inventário do tenant.');
+        }
+        const payload = (await response.json()) as { rooms: Room[]; reservations: Reservation[] };
+        setRooms(payload.rooms);
+        setReservations(payload.reservations);
+      } catch {
+        setRooms([]);
+        setReservations([]);
+      }
       setLoading(false);
     }
 
