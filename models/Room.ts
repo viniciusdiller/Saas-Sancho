@@ -7,6 +7,7 @@ export type RoomAttributes = {
   name: string;
   maxGuests: number;
   status: 'active' | 'maintenance';
+  tenantId: number;
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -20,6 +21,7 @@ export class Room extends Model<RoomAttributes, RoomCreationAttributes> implemen
   declare name: string;
   declare maxGuests: number;
   declare status: 'active' | 'maintenance';
+  declare tenantId: number;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 
@@ -57,6 +59,15 @@ export class Room extends Model<RoomAttributes, RoomCreationAttributes> implemen
           type: DataTypes.ENUM('active', 'maintenance'),
           allowNull: false,
           defaultValue: 'active',
+        },
+        tenantId: {
+          type: DataTypes.INTEGER.UNSIGNED,
+          allowNull: false,
+          field: 'tenant_id',
+          references: {
+            model: 'tenants',
+            key: 'id',
+          },
         },
       },
       {

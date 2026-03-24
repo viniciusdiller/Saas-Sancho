@@ -21,10 +21,10 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { createManualReservationAction } from '@/actions/reservation';
 import { CalendarSkeleton } from '@/components/calendar-skeleton';
 import { useToast } from '@/components/toast-provider';
 import { addDays, cn, differenceInDays, formatCurrencyInput, formatDateLabel, parseCurrencyInput } from '@/lib/utils';
-import { getReservations, getRooms, updateReservation } from '@/services/channexService';
 import type { OtaSource, Reservation, ReservationStatus, Room } from '@/types/channex';
 
 const OTA_STYLES: Record<OtaSource, string> = {
@@ -64,7 +64,11 @@ type ManualEntryForm = {
   checkIn: string;
   checkOut: string;
   entryType: 'manual_reservation' | 'blocked';
-  note: string;
+  amount: string;
+  guestName: string;
+  guestEmail: string;
+  guestPhone: string;
+  notes: string;
 };
 
 type ReservationDraft = {
@@ -85,10 +89,14 @@ type ReservationDraft = {
 
 const initialManualForm: ManualEntryForm = {
   roomId: '',
-  checkIn: '2026-03-23',
-  checkOut: '2026-03-24',
+  checkIn: '2026-03-23T14:00',
+  checkOut: '2026-03-24T12:00',
   entryType: 'blocked',
-  note: '',
+  amount: '',
+  guestName: '',
+  guestEmail: '',
+  guestPhone: '',
+  notes: '',
 };
 
 function formatCurrency(value: number, currency = 'BRL') {
@@ -104,7 +112,7 @@ function formatLongDate(date: string) {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
-  }).format(new Date(`${date}T00:00:00`));
+  }).format(new Date(date));
 }
 
 function createDraft(reservation: Reservation): ReservationDraft {
@@ -145,9 +153,10 @@ export function UnifiedCalendar() {
   useEffect(() => {
     async function loadData() {
       setLoading(true);
-      const [roomList, reservationList] = await Promise.all([getRooms(), getReservations()]);
-      setRooms(roomList);
-      setReservations(reservationList);
+      const response = await fetch('/api/tenant/inventory');
+      const payload = (await response.json()) as { rooms: Room[]; reservations: Reservation[] };
+      setRooms(payload.rooms);
+      setReservations(payload.reservations);
       setLoading(false);
     }
 
@@ -175,8 +184,8 @@ export function UnifiedCalendar() {
     const totalSlots = activeRooms.length * days.length;
     const rangeEnd = addDays(gridStart, days.length);
     const usedSlots = visibleReservations.reduce((sum, reservation) => {
-      const start = new Date(`${reservation.checkIn}T00:00:00`);
-      const end = new Date(`${reservation.checkOut}T00:00:00`);
+      const start = new Date(reservation.checkIn);
+      const end = new Date(reservation.checkOut);
       const visibleStart = start > gridStart ? start : gridStart;
       const visibleEnd = end < rangeEnd ? end : rangeEnd;
 
@@ -212,15 +221,19 @@ export function UnifiedCalendar() {
 
   function openManualEntryModal(roomId?: string, date?: Date) {
     const selectedRoomId = activeRooms.some((room) => room.id === roomId) ? roomId ?? '' : activeRooms[0]?.id ?? '';
-    const checkIn = date ? date.toISOString().slice(0, 10) : initialManualForm.checkIn;
-    const checkOut = date ? addDays(date, 1).toISOString().slice(0, 10) : initialManualForm.checkOut;
+    const checkIn = date ? `${date.toISOString().slice(0, 10)}T14:00` : initialManualForm.checkIn;
+    const checkOut = date ? `${addDays(date, 1).toISOString().slice(0, 10)}T12:00` : initialManualForm.checkOut;
 
     setManualForm({
       roomId: selectedRoomId,
       checkIn,
       checkOut,
       entryType: 'blocked',
-      note: '',
+      amount: '',
+      guestName: '',
+      guestEmail: '',
+      guestPhone: '',
+      notes: '',
     });
     setFormError(null);
     setIsModalOpen(true);
@@ -243,36 +256,11 @@ export function UnifiedCalendar() {
     setDrawerError(null);
   }
 
-  async function createManualReservation(entry: ManualEntryForm) {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    const nextReservation: Reservation = {
-      id: `manual_${Date.now()}`,
-      roomId: entry.roomId,
-      checkIn: entry.checkIn,
-      checkOut: entry.checkOut,
-      status: entry.entryType === 'manual_reservation' ? 'confirmed' : 'blocked',
-      otaSource: 'manual',
-      channelReference: entry.entryType === 'manual_reservation' ? 'MANUAL-RES' : 'MANUAL-BLOCK',
-      amount: entry.entryType === 'manual_reservation' ? 980 : 0,
-      currency: 'BRL',
-      customer: {
-        name: entry.note.trim() || (entry.entryType === 'manual_reservation' ? 'Reserva manual' : 'Bloqueio operacional'),
-        email: entry.entryType === 'manual_reservation' ? 'recepcao@empresa-sancho.com' : 'ops@empresa-sancho.com',
-        phone: '+55 81 3000-0000',
-      },
-      notes: entry.note.trim() || 'Lançamento manual criado pela equipe operacional.',
-    };
-
-    setReservations((current) => [...current, nextReservation]);
-    return nextReservation;
-  }
-
   async function handleManualEntrySubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError(null);
 
-    if (!manualForm.roomId || !manualForm.checkIn || !manualForm.checkOut) {
+    if (!manualForm.roomId || !manualForm.checkIn || !manualForm.checkOut || !manualForm.guestName) {
       setFormError('Preencha quarto e período para continuar.');
       return;
     }
@@ -285,9 +273,23 @@ export function UnifiedCalendar() {
     setIsSaving(true);
 
     try {
-      await createManualReservation(manualForm);
+      const amount = parseCurrencyInput(manualForm.amount || '0');
+      const createdReservation = await createManualReservationAction({
+        roomId: manualForm.roomId,
+        checkIn: new Date(manualForm.checkIn).toISOString(),
+        checkOut: new Date(manualForm.checkOut).toISOString(),
+        entryType: manualForm.entryType,
+        amount,
+        guestName: manualForm.guestName,
+        guestEmail: manualForm.guestEmail,
+        guestPhone: manualForm.guestPhone,
+        notes: manualForm.notes,
+      });
+      setReservations((current) => [...current, createdReservation]);
       setIsModalOpen(false);
       showToast('Lançamento manual criado com sucesso.');
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'Não foi possível criar o lançamento.');
     } finally {
       setIsSaving(false);
     }
@@ -339,7 +341,17 @@ export function UnifiedCalendar() {
         notes: draft.notes,
       };
 
-      const savedReservation = await updateReservation(updatedReservation);
+      const saveResponse = await fetch('/api/tenant/reservations', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reservation: updatedReservation }),
+      });
+
+      if (!saveResponse.ok) {
+        throw new Error('Falha ao atualizar reserva.');
+      }
+
+      const { reservation: savedReservation } = (await saveResponse.json()) as { reservation: Reservation };
       setReservations((current) =>
         current.map((reservation) => (reservation.id === savedReservation.id ? savedReservation : reservation)),
       );
@@ -351,6 +363,8 @@ export function UnifiedCalendar() {
 
       setDraft(createDraft(savedReservation));
       showToast('Reserva atualizada com sucesso.');
+    } catch (error) {
+      setDrawerError(error instanceof Error ? error.message : 'Não foi possível atualizar a reserva.');
     } finally {
       setIsUpdatingReservation(false);
     }
@@ -572,10 +586,10 @@ export function UnifiedCalendar() {
                       ))}
 
                       {roomReservations.map((reservation) => {
-                        const startOffset = differenceInDays(gridStart, new Date(`${reservation.checkIn}T00:00:00`)) - 1;
+                        const startOffset = differenceInDays(gridStart, new Date(reservation.checkIn)) - 1;
                         const duration = differenceInDays(
-                          new Date(`${reservation.checkIn}T00:00:00`),
-                          new Date(`${reservation.checkOut}T00:00:00`),
+                          new Date(reservation.checkIn),
+                          new Date(reservation.checkOut),
                         );
                         const visibleDuration = Math.min(duration, daysVisible - Math.max(0, startOffset));
 
@@ -697,7 +711,7 @@ export function UnifiedCalendar() {
                   <label className="block">
                     <span className="mb-2 block text-sm font-medium text-slate-200">Check-in</span>
                     <input
-                      type="date"
+                      type="datetime-local"
                       value={manualForm.checkIn}
                       onChange={(event) => setManualForm((current) => ({ ...current, checkIn: event.target.value }))}
                       className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white outline-none"
@@ -707,7 +721,7 @@ export function UnifiedCalendar() {
                   <label className="block">
                     <span className="mb-2 block text-sm font-medium text-slate-200">Check-out</span>
                     <input
-                      type="date"
+                      type="datetime-local"
                       value={manualForm.checkOut}
                       onChange={(event) => setManualForm((current) => ({ ...current, checkOut: event.target.value }))}
                       className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white outline-none"
@@ -715,13 +729,61 @@ export function UnifiedCalendar() {
                   </label>
                 </div>
 
+                <div className="grid gap-5 md:grid-cols-2">
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium text-slate-200">Nome do hóspede</span>
+                    <input
+                      type="text"
+                      value={manualForm.guestName}
+                      onChange={(event) => setManualForm((current) => ({ ...current, guestName: event.target.value }))}
+                      placeholder="Ex.: Marina Carvalho"
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium text-slate-200">Valor total</span>
+                    <input
+                      type="text"
+                      value={manualForm.amount}
+                      onChange={(event) =>
+                        setManualForm((current) => ({ ...current, amount: formatCurrencyInput(event.target.value) }))
+                      }
+                      placeholder="Ex.: R$ 1.280,00"
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500"
+                    />
+                  </label>
+                </div>
+
+                <div className="grid gap-5 md:grid-cols-2">
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium text-slate-200">E-mail</span>
+                    <input
+                      type="email"
+                      value={manualForm.guestEmail}
+                      onChange={(event) => setManualForm((current) => ({ ...current, guestEmail: event.target.value }))}
+                      placeholder="Ex.: marina@email.com"
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium text-slate-200">Telefone</span>
+                    <input
+                      type="text"
+                      value={manualForm.guestPhone}
+                      onChange={(event) => setManualForm((current) => ({ ...current, guestPhone: event.target.value }))}
+                      placeholder="Ex.: +55 81 99999-9999"
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500"
+                    />
+                  </label>
+                </div>
+
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium text-slate-200">Nome do hóspede / motivo</span>
+                  <span className="mb-2 block text-sm font-medium text-slate-200">Observações</span>
                   <input
                     type="text"
-                    value={manualForm.note}
-                    onChange={(event) => setManualForm((current) => ({ ...current, note: event.target.value }))}
-                    placeholder="Ex.: Família Souza ou manutenção do banheiro"
+                    value={manualForm.notes}
+                    onChange={(event) => setManualForm((current) => ({ ...current, notes: event.target.value }))}
+                    placeholder="Ex.: Chegada prevista para 15h30."
                     className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500"
                   />
                 </label>
