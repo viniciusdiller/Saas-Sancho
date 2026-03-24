@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { authConfig } from '@/lib/auth';
+import { authConfig, verifySessionToken } from '@/lib/auth';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard');
-  const isAuthenticated = request.cookies.get(authConfig.cookieName)?.value === 'authenticated';
+  const token = request.cookies.get(authConfig.cookieName)?.value;
+  const session = token ? await verifySessionToken(token) : null;
 
-  if (isDashboardRoute && !isAuthenticated) {
+  if (isDashboardRoute && !session) {
     const loginUrl = new URL('/', request.url);
     loginUrl.searchParams.set('redirectedFrom', request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (request.nextUrl.pathname === '/' && isAuthenticated) {
+  if (request.nextUrl.pathname === '/' && session) {
     return NextResponse.redirect(new URL('/dashboard/calendar', request.url));
   }
 

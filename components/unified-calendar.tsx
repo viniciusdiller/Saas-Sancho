@@ -24,7 +24,6 @@ import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { CalendarSkeleton } from '@/components/calendar-skeleton';
 import { useToast } from '@/components/toast-provider';
 import { addDays, cn, differenceInDays, formatCurrencyInput, formatDateLabel, parseCurrencyInput } from '@/lib/utils';
-import { getReservations, getRooms, updateReservation } from '@/services/channexService';
 import type { OtaSource, Reservation, ReservationStatus, Room } from '@/types/channex';
 
 const OTA_STYLES: Record<OtaSource, string> = {
@@ -145,9 +144,10 @@ export function UnifiedCalendar() {
   useEffect(() => {
     async function loadData() {
       setLoading(true);
-      const [roomList, reservationList] = await Promise.all([getRooms(), getReservations()]);
-      setRooms(roomList);
-      setReservations(reservationList);
+      const response = await fetch('/api/tenant/inventory');
+      const payload = (await response.json()) as { rooms: Room[]; reservations: Reservation[] };
+      setRooms(payload.rooms);
+      setReservations(payload.reservations);
       setLoading(false);
     }
 
@@ -339,7 +339,17 @@ export function UnifiedCalendar() {
         notes: draft.notes,
       };
 
-      const savedReservation = await updateReservation(updatedReservation);
+      const saveResponse = await fetch('/api/tenant/reservations', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reservation: updatedReservation }),
+      });
+
+      if (!saveResponse.ok) {
+        throw new Error('Falha ao atualizar reserva.');
+      }
+
+      const { reservation: savedReservation } = (await saveResponse.json()) as { reservation: Reservation };
       setReservations((current) =>
         current.map((reservation) => (reservation.id === savedReservation.id ? savedReservation : reservation)),
       );
@@ -351,6 +361,8 @@ export function UnifiedCalendar() {
 
       setDraft(createDraft(savedReservation));
       showToast('Reserva atualizada com sucesso.');
+    } catch (error) {
+      setDrawerError(error instanceof Error ? error.message : 'Não foi possível atualizar a reserva.');
     } finally {
       setIsUpdatingReservation(false);
     }
