@@ -1,20 +1,25 @@
 'use client';
 
+import type { Route } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarRange, Landmark, PanelLeftClose } from 'lucide-react';
+import { BedDouble, CalendarRange, ClipboardCheck, History, Landmark, PanelLeftClose, UsersRound, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type NavItem = {
-  href: '/dashboard/calendar' | '/dashboard/finance';
+  href: Route;
   label: string;
   description: string;
 };
 
-const ICONS = {
+const ICONS: Record<string, LucideIcon> = {
   '/dashboard/calendar': CalendarRange,
+  '/dashboard/check': ClipboardCheck,
+  '/dashboard/rooms': BedDouble,
+  '/dashboard/team': UsersRound,
   '/dashboard/finance': Landmark,
-} as const;
+  '/dashboard/guests': History,
+};
 
 export function DashboardSidebar({ tenantName, navItems }: { tenantName: string; navItems: NavItem[] }) {
   const pathname = usePathname();
@@ -37,7 +42,7 @@ export function DashboardSidebar({ tenantName, navItems }: { tenantName: string;
       <nav className="mt-5 space-y-3">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
-          const Icon = ICONS[item.href as keyof typeof ICONS] ?? CalendarRange;
+          const Icon = ICONS[item.href] ?? CalendarRange;
 
           return (
             <Link
