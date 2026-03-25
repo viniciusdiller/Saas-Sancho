@@ -9,9 +9,29 @@ const NAV_ITEMS = [
     description: 'Operação e moderação de reservas',
   },
   {
+    href: '/dashboard/check',
+    label: 'Check-in e Check-out',
+    description: 'Fluxo operacional da recepção',
+  },
+  {
+    href: '/dashboard/rooms',
+    label: 'Quartos',
+    description: 'Status operacional e governança',
+  },
+  {
+    href: '/dashboard/team',
+    label: 'Equipe',
+    description: 'Escala, turnos e gestão de pessoas',
+  },
+  {
     href: '/dashboard/finance',
     label: 'Financeiro',
     description: 'KPIs, despesas e margem líquida',
+  },
+  {
+    href: '/dashboard/guests',
+    label: 'Histórico de hóspedes',
+    description: 'Dados cadastrais e histórico de estadias',
   },
 ] as const;
 
