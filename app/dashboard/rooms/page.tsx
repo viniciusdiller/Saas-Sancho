@@ -4,6 +4,8 @@ import { useState } from 'react';
 
 import { BedDouble, Settings2 } from 'lucide-react';
 
+import { ROOM_SNAPSHOTS_MOCK } from '@/mocks/dashboard';
+
 type RoomOperationalStatus = 'vacant' | 'cleaning' | 'awaiting_guest' | 'maintenance' | 'occupied';
 
 type RoomSnapshot = {
@@ -15,48 +17,8 @@ type RoomSnapshot = {
   note: string;
 };
 
-const ROOM_SNAPSHOTS: RoomSnapshot[] = [
-  {
-    id: 'room-1',
-    room: 'Suíte Atlântico',
-    category: 'Suíte Luxo',
-    status: 'awaiting_guest',
-    updatedAt: 'Agora',
-    note: 'Enxoval pronto e amenities conferidos.',
-  },
-  {
-    id: 'room-2',
-    room: 'Chalé Serra Azul',
-    category: 'Chalé Master',
-    status: 'occupied',
-    updatedAt: '08:40',
-    note: 'Checkout previsto para hoje até 11h.',
-  },
-  {
-    id: 'room-3',
-    room: 'Bangalô Oceano',
-    category: 'Bangalô',
-    status: 'cleaning',
-    updatedAt: '09:05',
-    note: 'Limpeza de saída em andamento.',
-  },
-  {
-    id: 'room-4',
-    room: 'Suíte Coral Premium',
-    category: 'Suíte Premium',
-    status: 'vacant',
-    updatedAt: '09:12',
-    note: 'Disponível para novas reservas.',
-  },
-  {
-    id: 'room-5',
-    room: 'Cabana Mata Nativa',
-    category: 'Cabana',
-    status: 'maintenance',
-    updatedAt: 'Ontem',
-    note: 'Troca de bomba da jacuzzi.',
-  },
-];
+const ROOM_SNAPSHOTS: RoomSnapshot[] = ROOM_SNAPSHOTS_MOCK.map((item) => ({ ...item }));
+
 
 function roomStatusBadge(status: RoomOperationalStatus) {
   if (status === 'vacant') {

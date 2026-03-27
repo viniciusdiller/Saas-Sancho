@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react';
 import { ClipboardCheck, DoorOpen, Search, UserRoundPlus } from 'lucide-react';
 
+import { INITIAL_STAYS_MOCK } from '@/mocks/dashboard';
+
 type StayStatus = 'reserved' | 'checked_in' | 'checked_out';
 
 type Stay = {
@@ -34,67 +36,21 @@ function getDateByOffset(days: number) {
 
 const TODAY_KEY = getDateByOffset(0);
 
-const INITIAL_STAYS: Stay[] = [
-  {
-    id: 'stay-example-checkin',
-    guestName: 'Camila Torres',
-    document: '157.444.990-03',
-    room: 'Suíte Atlântico',
-    peopleCount: 2,
-    checkInDate: TODAY_KEY,
-    checkOutDate: getDateByOffset(3),
-    status: 'reserved',
-    notes: 'Exemplo: chegada prevista para hoje.',
-  },
-  {
-    id: 'stay-example-checkout',
-    guestName: 'Diego Lima',
-    document: '320.117.880-60',
-    room: 'Chalé Serra Azul',
-    peopleCount: 2,
-    checkInDate: getDateByOffset(-2),
-    checkOutDate: TODAY_KEY,
-    status: 'checked_in',
-    notes: 'Exemplo: saída prevista para hoje.',
-    checkedInAt: `${getDateByOffset(-2)}T15:10:00`,
-  },
-  {
-    id: 'stay-1',
-    guestName: 'Mariana Costa',
-    document: '112.334.889-10',
-    room: 'Bangalô Oceano',
-    peopleCount: 2,
-    checkInDate: getDateByOffset(1),
-    checkOutDate: getDateByOffset(4),
-    status: 'reserved',
-    notes: 'Lua de mel. Solicita espumante.',
-  },
-  {
-    id: 'stay-2',
-    guestName: 'Rafael Nunes',
-    document: '904.221.730-55',
-    room: 'Suíte Coral Premium',
-    peopleCount: 3,
-    checkInDate: getDateByOffset(-1),
-    checkOutDate: getDateByOffset(2),
-    status: 'checked_in',
-    notes: 'Chegada tardia registrada na madrugada.',
-    checkedInAt: `${getDateByOffset(-1)}T23:42:00`,
-  },
-  {
-    id: 'stay-3',
-    guestName: 'Paulo Menezes',
-    document: '201.555.221-40',
-    room: 'Bangalô Oceano',
-    peopleCount: 2,
-    checkInDate: getDateByOffset(-5),
-    checkOutDate: getDateByOffset(-1),
-    status: 'checked_out',
-    notes: 'Checkout finalizado sem pendencias.',
-    checkedInAt: `${getDateByOffset(-5)}T15:15:00`,
-    checkedOutAt: `${getDateByOffset(-1)}T11:06:00`,
-  },
-];
+const INITIAL_STAYS: Stay[] = INITIAL_STAYS_MOCK.map((item) => ({
+  id: item.id,
+  guestName: item.guestName,
+  document: item.document,
+  room: item.room,
+  peopleCount: item.peopleCount,
+  checkInDate: getDateByOffset(item.checkInOffset),
+  checkOutDate: getDateByOffset(item.checkOutOffset),
+  status: item.status,
+  notes: item.notes,
+  checkedInAt: item.checkedInOffset !== undefined && item.checkedInTime ? `${getDateByOffset(item.checkedInOffset)}T${item.checkedInTime}` : undefined,
+  checkedOutAt:
+    item.checkedOutOffset !== undefined && item.checkedOutTime ? `${getDateByOffset(item.checkedOutOffset)}T${item.checkedOutTime}` : undefined,
+}));
+
 
 function formatShortDate(value: string) {
   return new Intl.DateTimeFormat('pt-BR', {

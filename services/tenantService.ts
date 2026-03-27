@@ -8,6 +8,8 @@ import {
   updateDemoReservation,
 } from "@/services/demoData";
 import type { Expense, Reservation, Room } from "@/types/channex";
+import { isChannexConfigured } from "@/lib/channex";
+import { fetchChannexBookings, fetchChannexRoomTypes } from "@/services/channex/api";
 
 function mapRoom(room: InstanceType<ReturnType<typeof getDb>["Room"]>): Room {
   return {
@@ -59,9 +61,24 @@ function mapExpense(
   };
 }
 
+function shouldUseChannexLiveData(tenantId: number) {
+  return tenantId !== DEMO_TENANT_ID && isChannexConfigured() && process.env.CHANNEX_PROPERTY_ID;
+}
+
 export async function getRooms(tenantId: number): Promise<Room[]> {
   if (tenantId === DEMO_TENANT_ID) {
     return getDemoRooms();
+  }
+
+  if (shouldUseChannexLiveData(tenantId)) {
+    try {
+      const channexRooms = await fetchChannexRoomTypes({ page: 1, limit: 100 });
+      if (channexRooms.length > 0) {
+        return channexRooms;
+      }
+    } catch {
+      // fallback para banco local/mock
+    }
   }
 
   try {
@@ -81,6 +98,24 @@ export async function getReservations(
 ): Promise<Reservation[]> {
   if (tenantId === DEMO_TENANT_ID) {
     return getDemoReservations();
+  }
+
+  if (shouldUseChannexLiveData(tenantId)) {
+    try {
+      const channexReservations = await fetchChannexBookings(
+        {
+          propertyId: process.env.CHANNEX_PROPERTY_ID,
+          dateGte: new Date().toISOString().slice(0, 10),
+        },
+        { page: 1, limit: 100 },
+      );
+
+      if (channexReservations.length > 0) {
+        return channexReservations;
+      }
+    } catch {
+      // fallback para banco local/mock
+    }
   }
 
   try {

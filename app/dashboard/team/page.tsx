@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react';
 import { BadgeCheck, BriefcaseBusiness, Clock3, Plus, UsersRound } from 'lucide-react';
 
+import { INITIAL_TEAM_MOCK } from '@/mocks/dashboard';
+
 type TeamRole = 'Recepção' | 'Limpeza' | 'Manutenção' | 'Gestão';
 type EmploymentStatus = 'ativo' | 'inativo';
 type ShiftStatus = 'fora' | 'em_turno';
@@ -21,45 +23,8 @@ type TeamMember = {
   lastPunch?: string;
 };
 
-const INITIAL_TEAM: TeamMember[] = [
-  {
-    id: 'tm-1',
-    name: 'Patricia Melo',
-    email: 'patricia@vivamar.com',
-    phone: '+55 81 98888-1111',
-    role: 'Recepção',
-    shift: 'Manhã',
-    employmentStatus: 'ativo',
-    shiftStatus: 'em_turno',
-    tasksToday: 8,
-    finishedTasks: 3,
-    lastPunch: '2026-03-25T07:01:00',
-  },
-  {
-    id: 'tm-2',
-    name: 'Robson Vieira',
-    email: 'robson@vivamar.com',
-    phone: '+55 81 97777-4545',
-    role: 'Manutenção',
-    shift: 'Tarde',
-    employmentStatus: 'ativo',
-    shiftStatus: 'fora',
-    tasksToday: 5,
-    finishedTasks: 1,
-  },
-  {
-    id: 'tm-3',
-    name: 'Claudia Ramos',
-    email: 'claudia@vivamar.com',
-    phone: '+55 81 96666-1212',
-    role: 'Limpeza',
-    shift: 'Noite',
-    employmentStatus: 'ativo',
-    shiftStatus: 'fora',
-    tasksToday: 10,
-    finishedTasks: 0,
-  },
-];
+const INITIAL_TEAM: TeamMember[] = INITIAL_TEAM_MOCK.map((member) => ({ ...member }));
+
 
 function formatDateTime(value?: string) {
   if (!value) {
