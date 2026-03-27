@@ -56,3 +56,12 @@ middleware.ts
 - `services/tenantService.ts` agora tenta ler dados reais da Channex quando `CHANNEX_API_KEY` e `CHANNEX_PROPERTY_ID` estiverem definidos; caso contrário mantém banco/mock.
 - Mock data centralizado na pasta `mocks/` (`mocks/demoData.ts` e `mocks/dashboard.ts`).
 
+
+
+## Rate limit + propriedades (Channex)
+
+- `lib/channex.ts` agora aplica proteção local para ARI por propriedade (até 10/min para `availability` e 10/min para `restrictions/rates`) e retry com exponential backoff ao receber `429`.
+- Em caso de `429`, a propriedade entra em pausa temporária (padrão: 60s), evitando flood de requests.
+- Fila assíncrona de ARI em `services/channex/queue.ts` com flush padrão de 6s para batch/spacing.
+- Coleção de propriedades implementada em `services/channex/properties.ts` e exposta via `GET /api/tenant/channex/properties` (com `mode=options`).
+
