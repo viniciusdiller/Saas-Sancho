@@ -241,3 +241,118 @@ export const SEND_THREAD_ATTACHMENT_EXAMPLE = {
     message: 'Segue o comprovante solicitado.',
   },
 };
+
+export const REPLY_TO_REVIEW_EXAMPLE = {
+  reply: {
+    reply: 'Obrigado pelo feedback! Ficamos felizes que você tenha gostado da estadia.',
+  },
+};
+
+export const SEND_GUEST_REVIEW_EXAMPLE = {
+  review: {
+    scores: [
+      {
+        category: 'respect_house_rules',
+        rating: 5,
+      },
+      {
+        category: 'communication',
+        rating: 5,
+      },
+      {
+        category: 'cleanliness',
+        rating: 5,
+      },
+    ],
+    private_review: 'Hóspede atencioso e tranquilo.',
+    public_review: 'Ótima comunicação durante toda a estadia.',
+    is_reviewee_recommended: true,
+    tags: ['host_review_guest_positive_neat_and_tidy'],
+  },
+};
+
+export const CREATE_CHANNEL_AVAILABILITY_RULE_EXAMPLE = {
+  channel_availability_rule: {
+    title: 'Fechamento feriado',
+    type: 'close_out',
+    affected_channels: ['aa771972-ca6c-4985-a4ea-1aad29a0c2fd'],
+    affected_room_types: ['ae1c960d-5123-4be1-94ad-b50b181fc259'],
+    days: ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'],
+    start_date: '2026-12-20',
+    end_date: '2026-12-27',
+    property_id: '18535b75-26a0-4716-ae99-0578006639c5',
+  },
+};
+
+export const PAYMENT_APP_CONNECT_EXAMPLE = {
+  provider: 'stripe',
+  title: 'Stripe Conta Principal',
+  redirect_url: 'https://pousada.exemplo.com/channex/payments/callback',
+};
+
+export const PAYMENT_PROVIDER_LIST_EXAMPLE = {
+  page: 1,
+  limit: 10,
+};
+
+export const PAYMENT_PROVIDER_UPDATE_EXAMPLE = {
+  id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+  params: {
+    title: 'Stripe Matriz',
+  },
+};
+
+export const PRE_AUTH_PAYMENT_EXAMPLE = {
+  amount: '100.50',
+  booking_id: '513866a5-bdb1-4ff5-b02f-390f7fad7bd2',
+  payment_provider_id: 'ccaf28f3-f066-4f7d-b5a5-6dafd8a98753',
+  description: 'Pré-autorização no check-in',
+};
+
+export const SETTLE_OR_VOID_PAYMENT_EXAMPLE = {
+  payment_id: 'ba8dcd0f-fc91-4778-ae9f-6927a359c849',
+};
+
+export const CHARGE_PAYMENT_EXAMPLE = {
+  booking_id: '513866a5-bdb1-4ff5-b02f-390f7fad7bd2',
+  payment_provider_id: 'ccaf28f3-f066-4f7d-b5a5-6dafd8a98753',
+  amount: '10.00',
+  description: 'Cobrança de diária extra',
+};
+
+export const REFUND_PAYMENT_EXAMPLE = {
+  amount: '100.50',
+  payment_id: '73538783-d1c1-436a-b947-b4263232023b',
+};
+
+export const ONE_TIME_TOKEN_EXAMPLE = {
+  one_time_token: {
+    property_id: '18535b75-26a0-4716-ae99-0578006639c5',
+    group_id: '52397a6e-c330-44f4-a293-47042d3a3607',
+    username: 'vinicius.diller',
+  },
+};
+
+export const PAYMENT_TRANSACTIONS_QUERY_EXAMPLE = {
+  pagination: {
+    page: 1,
+    limit: 10,
+  },
+  order: {
+    inserted_at: 'desc',
+  },
+  filter: {},
+};
+
+export const UPDATE_RATES_EXAMPLE = {
+  values: [
+    {
+      property_id: '716305c4-561a-4561-a187-7f5b8aeb5920',
+      rate_plan_id: 'bab451e7-9ab1-4cc4-aa16-107bf7bbabb2',
+      date_from: '2026-04-01',
+      date_to: '2026-04-30',
+      days: ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'],
+      rate: 35000,
+    },
+  ],
+};

@@ -40,6 +40,19 @@ export async function getRatePlanRestrictions(input: DateFilterInput & { restric
   return payload.data;
 }
 
+export async function getRatePlanRates(input: DateFilterInput) {
+  const payload = await channexRequest<ChannexRestrictionObject>(
+    '/rates',
+    {
+      propertyId: input.propertyId,
+      skipLocalRateLimit: true,
+    },
+    toDateFilterQuery(input),
+  );
+
+  return payload.data;
+}
+
 export async function getRoomTypeAvailability(input: DateFilterInput) {
   const payload = await channexRequest<ChannexAvailabilityObject>(
     '/availability',
@@ -55,6 +68,11 @@ export async function getRoomTypeAvailability(input: DateFilterInput) {
 
 export async function updateRateRestrictions(propertyId: string, body: ChannexAriUpdatePayload) {
   const payload = await queueAriPost<ChannexTaskResource[]>(propertyId, '/restrictions', body);
+  return payload;
+}
+
+export async function updateRates(propertyId: string, body: ChannexAriUpdatePayload) {
+  const payload = await queueAriPost<ChannexTaskResource[]>(propertyId, '/rates', body);
   return payload;
 }
 

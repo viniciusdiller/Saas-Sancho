@@ -63,7 +63,7 @@ middleware.ts
 - `lib/channex.ts` agora aplica proteção local para ARI por propriedade (até 10/min para `availability` e 10/min para `restrictions/rates`) e retry com exponential backoff ao receber `429`.
 - Em caso de `429`, a propriedade entra em pausa temporária (padrão: 60s), evitando flood de requests.
 - Fila assíncrona de ARI em `services/channex/queue.ts` com flush padrão de 6s para batch/spacing.
-- Coleção de propriedades implementada em `services/channex/properties.ts` e exposta via `GET /api/tenant/channex/properties` (com `mode=options`).
+- Coleção de propriedades implementada em `services/channex/properties.ts` e exposta via `GET/POST /api/tenant/channex/properties` (com `mode=options`) e `GET/PUT/DELETE /api/tenant/channex/properties/:id`.
 
 
 
@@ -80,14 +80,20 @@ middleware.ts
 - `hotel_policies`: list/get/create/update/delete (`/api/tenant/channex/hotel-policies`).
 - `facilities`: property/room list e options (`/api/tenant/channex/facilities/property`, `/api/tenant/channex/facilities/room`).
 - `messages`: booking messages + message threads (list/get/messages/send/close/no-reply-needed) e upload lógico de anexos em `/api/tenant/channex/attachments`.
+- `reviews` + `scores`: list/get de reviews, reply, guest_review, score por propriedade e score detalhado (`/api/tenant/channex/reviews`, `/api/tenant/channex/scores/:propertyId`).
+- `channel_availability_rules`: list/get/create/update/delete com filtro por propriedade (`/api/tenant/channex/channel-availability-rules`).
+- `stripe_tokenization`: criação de token de cartão e payment method por booking (`/api/tenant/channex/bookings/:id/stripe-token`, `/api/tenant/channex/bookings/:id/stripe-payment-method`).
+- `payment_app`: conexão OAuth Stripe, providers, default provider e reporting de transações (`/api/tenant/channex/payment-app/:installationId/*`) + operações de pagamento em booking (`pre-auth`, `settle`, `void`, `charge`, `refund`).
+- `channel_codes` + `iframe`: endpoint mock para catálogo de códigos OTA e geração de one-time token com URL pronta de IFrame (`/api/tenant/channex/channel-codes`, `/api/tenant/channex/auth/one-time-token`).
 
 
 
 ## ARI + Webhooks integrados
 
-- ARI implementado em `services/channex/ari.ts` com endpoints para consultar e atualizar `restrictions` e `availability`.
+- ARI implementado em `services/channex/ari.ts` com endpoints para consultar e atualizar `restrictions`, `rates` e `availability`.
 - Rotas prontas:
   - `GET/POST /api/tenant/channex/ari/restrictions`
+  - `GET/POST /api/tenant/channex/ari/rates`
   - `GET/POST /api/tenant/channex/ari/availability`
 - Atualizações ARI passam pela fila por propriedade (`services/channex/queue.ts`) para respeitar limites e reduzir risco de `429`.
 - Webhooks implementado em `services/channex/webhooks.ts` com list/get/create/update/delete/test.

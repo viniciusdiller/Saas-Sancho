@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 
 import { getAuthenticatedSession } from '@/lib/auth';
-import { fetchChannexProperties, fetchChannexPropertyOptions } from '@/services/channex/properties';
+import {
+  createChannexProperty,
+  fetchChannexProperties,
+  fetchChannexPropertyOptions,
+} from '@/services/channex/properties';
+import type { ChannexCreatePropertyPayload } from '@/types/channex';
 
 export async function GET(request: Request) {
   const session = await getAuthenticatedSession();
@@ -37,4 +42,16 @@ export async function GET(request: Request) {
   );
 
   return NextResponse.json({ data });
+}
+
+export async function POST(request: Request) {
+  const session = await getAuthenticatedSession();
+
+  if (!session) {
+    return NextResponse.json({ message: 'Não autenticado.' }, { status: 401 });
+  }
+
+  const body = (await request.json()) as ChannexCreatePropertyPayload;
+  const data = await createChannexProperty(body);
+  return NextResponse.json({ data }, { status: 201 });
 }
