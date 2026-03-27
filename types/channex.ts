@@ -682,3 +682,103 @@ export type ChannexBookingNoShowPayload = {
     penalty_amount?: string;
   };
 };
+
+export type ChannexChannelResource = {
+  id: string;
+  type: 'channel';
+  attributes: {
+    id: string;
+    property_id?: string;
+    title?: string;
+    channel?: string;
+    is_active?: boolean;
+    settings?: Record<string, unknown>;
+    mappings?: Record<string, unknown>;
+    [key: string]: unknown;
+  };
+};
+
+export type ChannexChannelWritePayload = {
+  channel: Record<string, unknown>;
+};
+
+export type ChannexChannelSettingsWritePayload = {
+  settings: Record<string, unknown>;
+};
+
+export type ChannexChannelMappingWritePayload = {
+  mappings: Record<string, unknown>;
+};
+
+export type ChannexPhotoKind = 'photo' | 'ad' | 'menu';
+
+export type ChannexPhotoResource = {
+  id: string;
+  type: 'photo';
+  attributes: {
+    id: string;
+    property_id: string;
+    room_type_id: string | null;
+    url: string;
+    kind: ChannexPhotoKind;
+    author: string | null;
+    description: string | null;
+    position: number;
+  };
+};
+
+export type ChannexPhotoWritePayload = {
+  photo: {
+    property_id: string;
+    url: string;
+    room_type_id?: string | null;
+    kind?: ChannexPhotoKind;
+    author?: string;
+    description?: string;
+    position?: number;
+  };
+};
+
+export type ChannexPhotoUploadResponse = {
+  url: string;
+};
+
+export type ChannexHotelPolicyResource = {
+  id: string;
+  type: 'hotel_policy';
+  attributes: {
+    id: string;
+    property_id?: string;
+    title: string;
+    currency: string;
+    is_adults_only?: boolean;
+    max_count_of_guests: number;
+    checkin_time: string;
+    checkout_time: string;
+    internet_access_type: 'none' | 'wifi' | 'wired';
+    internet_access_coverage: 'entire_property' | 'public_areas' | 'all_rooms' | 'some_rooms' | 'business_centre';
+    internet_access_cost?: string | null;
+    parking_type: 'on_site' | 'nearby' | 'none';
+    parking_reservation: 'not_available' | 'not_needed' | 'needed';
+    parking_is_private: boolean;
+    pets_policy: 'allowed' | 'not_allowed' | 'by_arrangements' | 'assistive_only';
+    pets_non_refundable_fee: string;
+    pets_refundable_deposit?: string;
+    smoking_policy: 'no_smoking' | 'permitted_areas_only' | 'allowed';
+    [key: string]: unknown;
+  };
+};
+
+export type ChannexHotelPolicyWritePayload = {
+  hotel_policy: Partial<Omit<ChannexHotelPolicyResource['attributes'], 'id'>>;
+};
+
+export type ChannexFacilityResource = {
+  id: string;
+  type: 'facility';
+  attributes: {
+    id: string;
+    category: string;
+    title: string;
+  };
+};

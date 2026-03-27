@@ -74,6 +74,11 @@ middleware.ts
 - `group_users`: list, invite, get by id, update e delete (`/api/tenant/channex/group-users`).
 - `room_types`: list + filtro por propriedade, options, get by id, create, update e delete com `force` (`/api/tenant/channex/room-types`).
 - `rate_plans`: list, options por propriedade, get by id, create, update e delete com `force` (`/api/tenant/channex/rate-plans`).
+- `bookings` + `booking_revisions`: list/get, CRS create/update, reporting (`no_show`, `invalid_card`, `cancel_due_invalid_card`) e ack de revisões (`/api/tenant/channex/bookings`, `/api/tenant/channex/booking-revisions`).
+- `channels`: list/get/create/update/delete + settings/mappings (`/api/tenant/channex/channels`).
+- `photos`: list/get/create/update/delete + upload multipart (`/api/tenant/channex/photos`, `/api/tenant/channex/photos/upload`).
+- `hotel_policies`: list/get/create/update/delete (`/api/tenant/channex/hotel-policies`).
+- `facilities`: property/room list e options (`/api/tenant/channex/facilities/property`, `/api/tenant/channex/facilities/room`).
 
 
 

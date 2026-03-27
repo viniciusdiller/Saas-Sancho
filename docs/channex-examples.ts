@@ -163,3 +163,60 @@ export const CREATE_WEBHOOK_EXAMPLE = {
     send_data: true,
   },
 };
+
+export const CREATE_CHANNEL_EXAMPLE = {
+  channel: {
+    property_id: '716305c4-561a-4561-a187-7f5b8aeb5920',
+    channel: 'booking',
+    title: 'Booking.com Main',
+    is_active: true,
+  },
+};
+
+export const UPDATE_CHANNEL_SETTINGS_EXAMPLE = {
+  settings: {
+    max_advance_reservation: 365,
+    min_advance_reservation: 0,
+  },
+};
+
+export const UPDATE_CHANNEL_MAPPINGS_EXAMPLE = {
+  mappings: {
+    room_type_map: {
+      '994d1375-dbbd-4072-8724-b2ab32ce781b': 'booking-room-1',
+    },
+  },
+};
+
+export const CREATE_PHOTO_EXAMPLE = {
+  photo: {
+    property_id: '52397a6e-c330-44f4-a293-47042d3a3607',
+    url: 'https://img.channex.io/af08bc1d-8074-476c-bdb7-cec931edaf6a/',
+    room_type_id: null,
+    kind: 'photo',
+    author: 'Author Name',
+    description: 'Room View',
+    position: 0,
+  },
+};
+
+export const CREATE_HOTEL_POLICY_EXAMPLE = {
+  hotel_policy: {
+    property_id: '52397a6e-c330-44f4-a293-47042d3a3607',
+    title: 'Hotel Policy',
+    currency: 'BRL',
+    is_adults_only: false,
+    max_count_of_guests: 20,
+    checkin_time: '14:00',
+    checkout_time: '12:00',
+    internet_access_type: 'wifi',
+    internet_access_coverage: 'entire_property',
+    parking_type: 'on_site',
+    parking_reservation: 'needed',
+    parking_is_private: true,
+    pets_policy: 'allowed',
+    pets_non_refundable_fee: '0.00',
+    pets_refundable_deposit: '0.00',
+    smoking_policy: 'no_smoking',
+  },
+};
