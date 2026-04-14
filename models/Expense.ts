@@ -1,9 +1,16 @@
-import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
+import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 
-export type ExpenseCategory = 'limpeza' | 'manutenção' | 'impostos' | 'insumos' | 'comissões' | 'outros';
+export type ExpenseCategory =
+  | "limpeza"
+  | "manutenção"
+  | "impostos"
+  | "insumos"
+  | "comissões"
+  | "outros";
 
 export type ExpenseAttributes = {
   id: number;
+  createdByUserId: number;
   description: string;
   amount: number;
   date: string;
@@ -13,10 +20,17 @@ export type ExpenseAttributes = {
   updatedAt?: Date;
 };
 
-export type ExpenseCreationAttributes = Optional<ExpenseAttributes, 'id' | 'createdAt' | 'updatedAt'>;
+export type ExpenseCreationAttributes = Optional<
+  ExpenseAttributes,
+  "id" | "createdAt" | "updatedAt"
+>;
 
-export class Expense extends Model<ExpenseAttributes, ExpenseCreationAttributes> implements ExpenseAttributes {
+export class Expense
+  extends Model<ExpenseAttributes, ExpenseCreationAttributes>
+  implements ExpenseAttributes
+{
   declare id: number;
+  declare createdByUserId: number;
   declare description: string;
   declare amount: number;
   declare date: string;
@@ -33,6 +47,15 @@ export class Expense extends Model<ExpenseAttributes, ExpenseCreationAttributes>
           autoIncrement: true,
           primaryKey: true,
         },
+        createdByUserId: {
+          type: DataTypes.INTEGER.UNSIGNED,
+          allowNull: false,
+          field: "created_by_user_id",
+          references: {
+            model: "users",
+            key: "id",
+          },
+        },
         description: {
           type: DataTypes.STRING(200),
           allowNull: false,
@@ -46,23 +69,30 @@ export class Expense extends Model<ExpenseAttributes, ExpenseCreationAttributes>
           allowNull: false,
         },
         category: {
-          type: DataTypes.ENUM('limpeza', 'manutenção', 'impostos', 'insumos', 'comissões', 'outros'),
+          type: DataTypes.ENUM(
+            "limpeza",
+            "manutenção",
+            "impostos",
+            "insumos",
+            "comissões",
+            "outros",
+          ),
           allowNull: false,
         },
         tenantId: {
           type: DataTypes.INTEGER.UNSIGNED,
           allowNull: false,
-          field: 'tenant_id',
+          field: "tenant_id",
           references: {
-            model: 'tenants',
-            key: 'id',
+            model: "tenants",
+            key: "id",
           },
         },
       },
       {
         sequelize,
-        tableName: 'expenses',
-        modelName: 'Expense',
+        tableName: "expenses",
+        modelName: "Expense",
       },
     );
   }

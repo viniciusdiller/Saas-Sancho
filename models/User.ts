@@ -1,6 +1,6 @@
-import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
+import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 
-export type UserRole = 'admin' | 'staff';
+export type UserRole = "admin" | "staff" | "customer";
 
 export type UserAttributes = {
   id: number;
@@ -12,9 +12,15 @@ export type UserAttributes = {
   updatedAt?: Date;
 };
 
-export type UserCreationAttributes = Optional<UserAttributes, 'id' | 'role' | 'createdAt' | 'updatedAt'>;
+export type UserCreationAttributes = Optional<
+  UserAttributes,
+  "id" | "role" | "createdAt" | "updatedAt"
+>;
 
-export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+export class User
+  extends Model<UserAttributes, UserCreationAttributes>
+  implements UserAttributes
+{
   declare id: number;
   declare email: string;
   declare passwordHash: string;
@@ -42,27 +48,27 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
         passwordHash: {
           type: DataTypes.STRING(255),
           allowNull: false,
-          field: 'password_hash',
+          field: "password_hash",
         },
         role: {
-          type: DataTypes.ENUM('admin', 'staff'),
+          type: DataTypes.ENUM("admin", "staff", "customer"),
           allowNull: false,
-          defaultValue: 'admin',
+          defaultValue: "admin",
         },
         tenantId: {
           type: DataTypes.INTEGER.UNSIGNED,
           allowNull: false,
-          field: 'tenant_id',
+          field: "tenant_id",
           references: {
-            model: 'tenants',
-            key: 'id',
+            model: "tenants",
+            key: "id",
           },
         },
       },
       {
         sequelize,
-        tableName: 'users',
-        modelName: 'User',
+        tableName: "users",
+        modelName: "User",
       },
     );
   }

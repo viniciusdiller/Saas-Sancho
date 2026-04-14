@@ -38,6 +38,18 @@ export function initializeModels(sequelize: Sequelize) {
   Tenant.hasMany(Expense, { foreignKey: "tenantId", as: "expenses" });
   Expense.belongsTo(Tenant, { foreignKey: "tenantId", as: "tenant" });
 
+  User.hasMany(Reservation, {
+    foreignKey: "createdByUserId",
+    as: "createdReservations",
+  });
+  Reservation.belongsTo(User, { foreignKey: "createdByUserId", as: "creator" });
+
+  User.hasMany(Expense, {
+    foreignKey: "createdByUserId",
+    as: "registeredExpenses",
+  });
+  Expense.belongsTo(User, { foreignKey: "createdByUserId", as: "registrar" });
+
   Room.hasMany(Reservation, {
     foreignKey: "roomId",
     as: "reservations",
