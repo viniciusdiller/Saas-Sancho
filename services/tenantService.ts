@@ -9,7 +9,10 @@ import {
 } from "@/services/demoData";
 import type { Expense, Reservation, Room } from "@/types/channex";
 import { isChannexConfigured } from "@/lib/channex";
-import { fetchChannexBookings, fetchChannexRoomTypes } from "@/services/channex/api";
+import {
+  fetchChannexBookings,
+  fetchChannexRoomTypes,
+} from "@/services/channex/api";
 
 function mapRoom(room: InstanceType<ReturnType<typeof getDb>["Room"]>): Room {
   return {
@@ -18,6 +21,8 @@ function mapRoom(room: InstanceType<ReturnType<typeof getDb>["Room"]>): Room {
     name: room.name,
     maxGuests: room.maxGuests,
     status: room.status,
+    price: room.price,
+    quantity: room.quantity,
   };
 }
 
@@ -62,7 +67,11 @@ function mapExpense(
 }
 
 function shouldUseChannexLiveData(tenantId: number) {
-  return tenantId !== DEMO_TENANT_ID && isChannexConfigured() && process.env.CHANNEX_PROPERTY_ID;
+  return (
+    tenantId !== DEMO_TENANT_ID &&
+    isChannexConfigured() &&
+    process.env.CHANNEX_PROPERTY_ID
+  );
 }
 
 export async function getRooms(tenantId: number): Promise<Room[]> {
@@ -211,10 +220,15 @@ export async function createExpense(
   }
 
   const { Expense } = getDb();
-  const expense = await Expense.create({ ...input, tenantId });
+
+  const expense = await Expense.create({
+    ...input,
+    tenantId,
+    createdByUserId: 1,
+  });
+
   return mapExpense(expense);
 }
-
 export async function getUnifiedInventory(tenantId: number) {
   const [roomList, reservationList, expenseList] = await Promise.all([
     getRooms(tenantId),

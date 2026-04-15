@@ -1,26 +1,36 @@
-import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
+import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 
 export type RoomAttributes = {
   id: number;
   localRoomId: string;
   channexRoomTypeId: string;
   name: string;
+  price: number;
+  quantity: number;
   maxGuests: number;
-  status: 'active' | 'maintenance';
+  status: "active" | "maintenance";
   tenantId: number;
   createdAt?: Date;
   updatedAt?: Date;
 };
 
-export type RoomCreationAttributes = Optional<RoomAttributes, 'id' | 'createdAt' | 'updatedAt'>;
+export type RoomCreationAttributes = Optional<
+  RoomAttributes,
+  "id" | "createdAt" | "updatedAt"
+>;
 
-export class Room extends Model<RoomAttributes, RoomCreationAttributes> implements RoomAttributes {
+export class Room
+  extends Model<RoomAttributes, RoomCreationAttributes>
+  implements RoomAttributes
+{
   declare id: number;
   declare localRoomId: string;
   declare channexRoomTypeId: string;
   declare name: string;
+  declare price: number;
+  declare quantity: number;
   declare maxGuests: number;
-  declare status: 'active' | 'maintenance';
+  declare status: "active" | "maintenance";
   declare tenantId: number;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
@@ -37,43 +47,53 @@ export class Room extends Model<RoomAttributes, RoomCreationAttributes> implemen
           type: DataTypes.STRING(60),
           allowNull: false,
           unique: true,
-          field: 'local_room_id',
+          field: "local_room_id",
         },
         channexRoomTypeId: {
           type: DataTypes.STRING(80),
           allowNull: false,
           unique: true,
-          field: 'channex_room_type_id',
+          field: "channex_room_type_id",
         },
         name: {
           type: DataTypes.STRING(120),
           allowNull: false,
         },
+        price: {
+          type: DataTypes.DECIMAL(12, 2),
+          allowNull: false,
+          defaultValue: 0,
+        },
+        quantity: {
+          type: DataTypes.INTEGER.UNSIGNED,
+          allowNull: false,
+          defaultValue: 1,
+        },
         maxGuests: {
           type: DataTypes.INTEGER.UNSIGNED,
           allowNull: false,
           defaultValue: 2,
-          field: 'max_guests',
+          field: "max_guests",
         },
         status: {
-          type: DataTypes.ENUM('active', 'maintenance'),
+          type: DataTypes.ENUM("active", "maintenance"),
           allowNull: false,
-          defaultValue: 'active',
+          defaultValue: "active",
         },
         tenantId: {
           type: DataTypes.INTEGER.UNSIGNED,
           allowNull: false,
-          field: 'tenant_id',
+          field: "tenant_id",
           references: {
-            model: 'tenants',
-            key: 'id',
+            model: "tenants",
+            key: "id",
           },
         },
       },
       {
         sequelize,
-        tableName: 'rooms',
-        modelName: 'Room',
+        tableName: "rooms",
+        modelName: "Room",
       },
     );
   }

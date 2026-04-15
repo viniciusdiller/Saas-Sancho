@@ -1,14 +1,20 @@
-export type OtaSource = 'booking' | 'expedia' | 'hotels_com' | 'manual';
+export type OtaSource = "booking" | "expedia" | "hotels_com" | "manual";
 
 export type Room = {
   id: string;
   channexRoomTypeId: string;
   name: string;
   maxGuests: number;
-  status: 'active' | 'maintenance';
+  price: number;
+  quantity: number;
+  status: "active" | "maintenance";
 };
 
-export type ReservationStatus = 'confirmed' | 'pending' | 'cancelled' | 'blocked';
+export type ReservationStatus =
+  | "confirmed"
+  | "pending"
+  | "cancelled"
+  | "blocked";
 
 export type Customer = {
   name: string;
@@ -30,7 +36,13 @@ export type Reservation = {
   notes: string;
 };
 
-export type ExpenseCategory = 'limpeza' | 'manutenção' | 'impostos' | 'insumos' | 'comissões' | 'outros';
+export type ExpenseCategory =
+  | "limpeza"
+  | "manutenção"
+  | "impostos"
+  | "insumos"
+  | "comissões"
+  | "outros";
 
 export type Expense = {
   id: string;
@@ -65,11 +77,11 @@ export type ChannexCreateRequest<T> = {
 
 export type ChannexRoomType = {
   id: string;
-  type: 'room_type';
+  type: "room_type";
   attributes: {
     title?: string;
     name?: string;
-    status?: 'active' | 'inactive' | string;
+    status?: "active" | "inactive" | string;
     max_occupancy?: {
       adults?: number;
       children?: number;
@@ -80,12 +92,12 @@ export type ChannexRoomType = {
 
 export type ChannexBooking = {
   id: string;
-  type: 'booking';
+  type: "booking";
   attributes: {
     property_id?: string;
     arrival_date?: string;
     departure_date?: string;
-    status?: 'new' | 'modified' | 'cancelled' | string;
+    status?: "new" | "modified" | "cancelled" | string;
     currency?: string;
     amount?: string | number;
     notes?: string;
@@ -118,7 +130,7 @@ export interface ChannexBookingPayload {
     property_id: string;
     arrival_date: string;
     departure_date: string;
-    status: 'new' | 'modified' | 'cancelled';
+    status: "new" | "modified" | "cancelled";
     currency: string;
     amount: string;
     notes?: string;
@@ -140,34 +152,34 @@ export interface ChannexBookingPayload {
 }
 
 export type ChannexPropertyType =
-  | 'apart_hotel'
-  | 'apartment'
-  | 'boat'
-  | 'camping'
-  | 'capsule_hotel'
-  | 'chalet'
-  | 'country_house'
-  | 'farm_stay'
-  | 'guest_house'
-  | 'holiday_home'
-  | 'holiday_park'
-  | 'homestay'
-  | 'hostel'
-  | 'hotel'
-  | 'inn'
-  | 'lodge'
-  | 'motel'
-  | 'resort'
-  | 'riad'
-  | 'ryokan'
-  | 'tent'
-  | 'villa';
+  | "apart_hotel"
+  | "apartment"
+  | "boat"
+  | "camping"
+  | "capsule_hotel"
+  | "chalet"
+  | "country_house"
+  | "farm_stay"
+  | "guest_house"
+  | "holiday_home"
+  | "holiday_park"
+  | "homestay"
+  | "hostel"
+  | "hotel"
+  | "inn"
+  | "lodge"
+  | "motel"
+  | "resort"
+  | "riad"
+  | "ryokan"
+  | "tent"
+  | "villa";
 
 export type ChannexPropertySettings = {
   allow_availability_autoupdate_on_confirmation?: boolean;
   allow_availability_autoupdate_on_modification?: boolean;
   allow_availability_autoupdate_on_cancellation?: boolean;
-  min_stay_type?: 'both' | 'arrival' | 'through';
+  min_stay_type?: "both" | "arrival" | "through";
   min_price?: string | number | null;
   max_price?: string | number | null;
   state_length?: number;
@@ -183,7 +195,7 @@ export type ChannexPropertyContent = {
     url: string;
     position?: number;
     author?: string;
-    kind?: 'photo' | 'ad' | 'menu';
+    kind?: "photo" | "ad" | "menu";
     description?: string;
   }>;
 };
@@ -211,13 +223,13 @@ export type ChannexPropertyAttributes = {
 };
 
 export type ChannexProperty = {
-  type: 'property';
+  type: "property";
   id: string;
   attributes: ChannexPropertyAttributes;
 };
 
 export type ChannexPropertyOption = {
-  type: 'properties';
+  type: "properties";
   id: string;
   attributes: {
     id: string;
@@ -235,18 +247,18 @@ export type ChannexCreatePropertyPayload = {
 
 export type ChannexUpdatePropertyPayload = ChannexCreatePropertyPayload;
 
-export type ChannexAccessRole = 'owner' | 'user';
+export type ChannexAccessRole = "owner" | "user";
 
 export type ChannexLinkedUser = {
   id: string;
-  type: 'user';
+  type: "user";
   email?: string;
   name?: string;
 };
 
 export type ChannexPropertyUser = {
   id: string;
-  type: 'property_user';
+  type: "property_user";
   attributes: {
     id: string;
     overrides: Record<string, unknown> | null;
@@ -255,7 +267,7 @@ export type ChannexPropertyUser = {
     user_id: string;
   };
   relationships?: {
-    property?: { data: { id: string; type: 'property' } };
+    property?: { data: { id: string; type: "property" } };
     user?: { data: ChannexLinkedUser };
   };
 };
@@ -278,7 +290,7 @@ export type ChannexUpdatePropertyUserPayload = {
 
 export type ChannexGroup = {
   id: string;
-  type: 'group';
+  type: "group";
   attributes: {
     id: string;
     title: string;
@@ -287,7 +299,7 @@ export type ChannexGroup = {
     properties?: {
       data: Array<{
         id: string;
-        type: 'property';
+        type: "property";
         attributes?: {
           id: string;
           title: string;
@@ -307,7 +319,7 @@ export type ChannexUpdateGroupPayload = ChannexCreateGroupPayload;
 
 export type ChannexGroupUser = {
   id: string;
-  type: 'group_user';
+  type: "group_user";
   attributes: {
     id: string;
     overrides: Record<string, unknown> | null;
@@ -316,7 +328,7 @@ export type ChannexGroupUser = {
     user_id: string;
   };
   relationships?: {
-    group?: { data: { id: string; type: 'group' } };
+    group?: { data: { id: string; type: "group" } };
     user?: { data: ChannexLinkedUser };
   };
 };
@@ -339,7 +351,7 @@ export type ChannexUpdateGroupUserPayload = {
 
 export type ChannexRoomTypeOption = {
   id: string;
-  type: 'room_type';
+  type: "room_type";
   attributes: {
     id: string;
     property_id: string;
@@ -350,7 +362,7 @@ export type ChannexRoomTypeOption = {
 
 export type ChannexRoomTypeResource = {
   id: string;
-  type: 'room_type';
+  type: "room_type";
   attributes: {
     id: string;
     title: string;
@@ -360,12 +372,12 @@ export type ChannexRoomTypeResource = {
     occ_infants: number;
     default_occupancy: number;
     count_of_rooms: number;
-    room_kind?: 'room' | 'dorm';
+    room_kind?: "room" | "dorm";
     capacity?: number | null;
     content?: ChannexPropertyContent;
   };
   relationships?: {
-    property?: { data: { id: string; type: 'property' } };
+    property?: { data: { id: string; type: "property" } };
   };
 };
 
@@ -379,25 +391,25 @@ export type ChannexCreateRoomTypePayload = {
     occ_infants: number;
     default_occupancy: number;
     facilities?: string[];
-    room_kind?: 'room' | 'dorm';
+    room_kind?: "room" | "dorm";
     capacity?: number | null;
     content?: ChannexPropertyContent;
   };
 };
 
 export type ChannexUpdateRoomTypePayload = {
-  room_type: Partial<ChannexCreateRoomTypePayload['room_type']>;
+  room_type: Partial<ChannexCreateRoomTypePayload["room_type"]>;
 };
 
 export type ChannexRatePlanOption = {
   id: string;
-  type: 'rate_plan';
+  type: "rate_plan";
   attributes: {
     id: string;
     title: string;
     property_id: string;
     room_type_id: string;
-    sell_mode: 'per_room' | 'per_person';
+    sell_mode: "per_room" | "per_person";
     occupancy?: number;
     parent_rate_plan_id?: string | null;
     rate_category_id?: string | null;
@@ -406,14 +418,14 @@ export type ChannexRatePlanOption = {
 
 export type ChannexRatePlanResource = {
   id: string;
-  type: 'rate_plan';
+  type: "rate_plan";
   attributes: {
     id: string;
     title: string;
     property_id?: string;
     room_type_id?: string;
-    sell_mode: 'per_room' | 'per_person';
-    rate_mode: 'manual' | 'derived' | 'auto' | 'cascade';
+    sell_mode: "per_room" | "per_person";
+    rate_mode: "manual" | "derived" | "auto" | "cascade";
     currency?: string;
     children_fee?: string;
     infant_fee?: string;
@@ -455,30 +467,33 @@ export type ChannexCreateRatePlanPayload = {
       derived_option?: Record<string, unknown>;
     }>;
     currency?: string;
-    sell_mode?: 'per_room' | 'per_person';
-    rate_mode?: 'manual' | 'derived' | 'auto' | 'cascade';
+    sell_mode?: "per_room" | "per_person";
+    rate_mode?: "manual" | "derived" | "auto" | "cascade";
     [key: string]: unknown;
   };
 };
 
 export type ChannexUpdateRatePlanPayload = {
-  rate_plan: Partial<ChannexCreateRatePlanPayload['rate_plan']>;
+  rate_plan: Partial<ChannexCreateRatePlanPayload["rate_plan"]>;
 };
 
 export type ChannexRestrictionName =
-  | 'availability'
-  | 'rate'
-  | 'min_stay_arrival'
-  | 'min_stay_through'
-  | 'min_stay'
-  | 'closed_to_arrival'
-  | 'closed_to_departure'
-  | 'stop_sell'
-  | 'max_stay'
-  | 'availability_offset'
-  | 'max_availability';
+  | "availability"
+  | "rate"
+  | "min_stay_arrival"
+  | "min_stay_through"
+  | "min_stay"
+  | "closed_to_arrival"
+  | "closed_to_departure"
+  | "stop_sell"
+  | "max_stay"
+  | "availability_offset"
+  | "max_availability";
 
-export type ChannexRestrictionObject = Record<string, Record<string, Record<string, string | number | boolean | null>>>;
+export type ChannexRestrictionObject = Record<
+  string,
+  Record<string, Record<string, string | number | boolean | null>>
+>;
 export type ChannexAvailabilityObject = Record<string, Record<string, number>>;
 
 export type ChannexAriValue = {
@@ -488,7 +503,7 @@ export type ChannexAriValue = {
   date?: string;
   date_from?: string;
   date_to?: string;
-  days?: Array<'mo' | 'tu' | 'we' | 'th' | 'fr' | 'sa' | 'su'>;
+  days?: Array<"mo" | "tu" | "we" | "th" | "fr" | "sa" | "su">;
   rate?: string | number;
   rates?: Array<{ occupancy: number; rate: number }>;
   availability?: number;
@@ -507,12 +522,12 @@ export type ChannexAriUpdatePayload = {
 
 export type ChannexTaskResource = {
   id: string;
-  type: 'task';
+  type: "task";
 };
 
 export type ChannexWebhookResource = {
   id: string;
-  type: 'webhook';
+  type: "webhook";
   attributes: {
     callback_url: string;
     event_mask: string;
@@ -524,7 +539,7 @@ export type ChannexWebhookResource = {
   relationships: {
     property: {
       data: {
-        type: 'property';
+        type: "property";
         id: string;
       };
     };
@@ -609,7 +624,7 @@ export type ChannexBookingAttributes = {
   system_id?: string;
   ota_reservation_code?: string;
   ota_name?: string;
-  status: 'new' | 'modified' | 'cancelled';
+  status: "new" | "modified" | "cancelled";
   rooms: ChannexBookingRoom[];
   services?: Array<Record<string, unknown>>;
   guarantee?: ChannexBookingGuarantee | null;
@@ -621,8 +636,8 @@ export type ChannexBookingAttributes = {
   amount?: string;
   currency?: string;
   notes?: string | null;
-  payment_collect?: 'property' | 'ota' | null;
-  payment_type?: 'credit_card' | 'bank_transfer' | null;
+  payment_collect?: "property" | "ota" | null;
+  payment_type?: "credit_card" | "bank_transfer" | null;
   ota_commission?: string | null;
   inserted_at?: string;
   [key: string]: unknown;
@@ -630,13 +645,13 @@ export type ChannexBookingAttributes = {
 
 export type ChannexBookingResource = {
   id: string;
-  type: 'booking';
+  type: "booking";
   attributes: ChannexBookingAttributes;
 };
 
 export type ChannexBookingRevisionResource = {
   id: string;
-  type: 'booking_revision';
+  type: "booking_revision";
   attributes: ChannexBookingAttributes;
 };
 
@@ -647,7 +662,7 @@ export type ChannexMetaMessageResponse = {
 
 export type ChannexBookingCrsPayload = {
   booking: {
-    status?: 'new' | 'modified' | 'cancelled';
+    status?: "new" | "modified" | "cancelled";
     property_id: string;
     ota_reservation_code: string;
     ota_name: string;
@@ -656,8 +671,8 @@ export type ChannexBookingCrsPayload = {
     arrival_hour?: string;
     services?: Array<Record<string, unknown>>;
     deposits?: Array<Record<string, unknown>>;
-    payment_collect?: 'property' | 'ota' | null;
-    payment_type?: 'credit_card' | 'bank_transfer' | null;
+    payment_collect?: "property" | "ota" | null;
+    payment_type?: "credit_card" | "bank_transfer" | null;
     currency?: string;
     ota_commission?: string;
     notes?: string;
@@ -685,7 +700,7 @@ export type ChannexBookingNoShowPayload = {
 
 export type ChannexChannelResource = {
   id: string;
-  type: 'channel';
+  type: "channel";
   attributes: {
     id: string;
     property_id?: string;
@@ -710,11 +725,11 @@ export type ChannexChannelMappingWritePayload = {
   mappings: Record<string, unknown>;
 };
 
-export type ChannexPhotoKind = 'photo' | 'ad' | 'menu';
+export type ChannexPhotoKind = "photo" | "ad" | "menu";
 
 export type ChannexPhotoResource = {
   id: string;
-  type: 'photo';
+  type: "photo";
   attributes: {
     id: string;
     property_id: string;
@@ -745,7 +760,7 @@ export type ChannexPhotoUploadResponse = {
 
 export type ChannexHotelPolicyResource = {
   id: string;
-  type: 'hotel_policy';
+  type: "hotel_policy";
   attributes: {
     id: string;
     property_id?: string;
@@ -755,27 +770,36 @@ export type ChannexHotelPolicyResource = {
     max_count_of_guests: number;
     checkin_time: string;
     checkout_time: string;
-    internet_access_type: 'none' | 'wifi' | 'wired';
-    internet_access_coverage: 'entire_property' | 'public_areas' | 'all_rooms' | 'some_rooms' | 'business_centre';
+    internet_access_type: "none" | "wifi" | "wired";
+    internet_access_coverage:
+      | "entire_property"
+      | "public_areas"
+      | "all_rooms"
+      | "some_rooms"
+      | "business_centre";
     internet_access_cost?: string | null;
-    parking_type: 'on_site' | 'nearby' | 'none';
-    parking_reservation: 'not_available' | 'not_needed' | 'needed';
+    parking_type: "on_site" | "nearby" | "none";
+    parking_reservation: "not_available" | "not_needed" | "needed";
     parking_is_private: boolean;
-    pets_policy: 'allowed' | 'not_allowed' | 'by_arrangements' | 'assistive_only';
+    pets_policy:
+      | "allowed"
+      | "not_allowed"
+      | "by_arrangements"
+      | "assistive_only";
     pets_non_refundable_fee: string;
     pets_refundable_deposit?: string;
-    smoking_policy: 'no_smoking' | 'permitted_areas_only' | 'allowed';
+    smoking_policy: "no_smoking" | "permitted_areas_only" | "allowed";
     [key: string]: unknown;
   };
 };
 
 export type ChannexHotelPolicyWritePayload = {
-  hotel_policy: Partial<Omit<ChannexHotelPolicyResource['attributes'], 'id'>>;
+  hotel_policy: Partial<Omit<ChannexHotelPolicyResource["attributes"], "id">>;
 };
 
 export type ChannexFacilityResource = {
   id: string;
-  type: 'facility';
+  type: "facility";
   attributes: {
     id: string;
     category: string;
@@ -783,11 +807,11 @@ export type ChannexFacilityResource = {
   };
 };
 
-export type ChannexMessageSender = 'guest' | 'property' | 'system';
+export type ChannexMessageSender = "guest" | "property" | "system";
 
 export type ChannexMessageResource = {
   id: string;
-  type: 'message';
+  type: "message";
   attributes: {
     message: string;
     attachments: string[];
@@ -800,13 +824,13 @@ export type ChannexMessageResource = {
     message_thread?: {
       data: {
         id: string;
-        type: 'message_thread';
+        type: "message_thread";
       };
     };
     user?: {
       data: {
         id: string;
-        type: 'user';
+        type: "user";
       };
     };
   };
@@ -814,7 +838,7 @@ export type ChannexMessageResource = {
 
 export type ChannexMessageThreadResource = {
   id: string;
-  type: 'message_thread';
+  type: "message_thread";
   attributes: {
     title: string;
     is_closed: boolean;
@@ -831,9 +855,9 @@ export type ChannexMessageThreadResource = {
     updated_at: string;
   };
   relationships?: {
-    booking?: { data: { id: string; type: 'booking' } };
-    channel?: { data: { id: string; type: 'channel' } };
-    property?: { data: { id: string; type: 'property' } };
+    booking?: { data: { id: string; type: "booking" } };
+    channel?: { data: { id: string; type: "channel" } };
+    property?: { data: { id: string; type: "property" } };
   };
 };
 
@@ -844,11 +868,12 @@ export type ChannexBookingMessageWritePayload = {
   };
 };
 
-export type ChannexThreadMessageWritePayload = ChannexBookingMessageWritePayload;
+export type ChannexThreadMessageWritePayload =
+  ChannexBookingMessageWritePayload;
 
 export type ChannexAttachmentResource = {
   id: string;
-  type: 'attachment';
+  type: "attachment";
 };
 
 export type ChannexAttachmentCreatePayload = {
@@ -866,7 +891,7 @@ export type ChannexReviewScoreItem = {
 
 export type ChannexReviewResource = {
   id: string;
-  type: 'review';
+  type: "review";
   attributes: {
     id: string;
     content: string | null;
@@ -884,9 +909,9 @@ export type ChannexReviewResource = {
     tags: string[];
   };
   relationships?: {
-    booking?: { data: { id: string; type: 'booking' } };
-    channel?: { data: { id: string; type: 'channel' } };
-    property?: { data: { id: string; type: 'property'; title?: string } };
+    booking?: { data: { id: string; type: "booking" } };
+    channel?: { data: { id: string; type: "channel" } };
+    property?: { data: { id: string; type: "property"; title?: string } };
   };
 };
 
@@ -921,7 +946,7 @@ export type ChannexScoreMap = Record<
 
 export type ChannexPropertyScoreResource = {
   id: string;
-  type: 'score';
+  type: "score";
   attributes: {
     id: string;
     count: number;
@@ -934,7 +959,7 @@ export type ChannexPropertyScoreResource = {
     property?: {
       data: {
         id: string;
-        type: 'property';
+        type: "property";
         title?: string;
       };
     };
@@ -943,7 +968,7 @@ export type ChannexPropertyScoreResource = {
 
 export type ChannexOtaScoreResource = {
   id: string;
-  type: 'ota_score';
+  type: "ota_score";
   attributes: {
     id: string;
     channel_id: string;
@@ -955,18 +980,21 @@ export type ChannexOtaScoreResource = {
 };
 
 export type ChannexDetailedScoreResource = ChannexPropertyScoreResource & {
-  relationships?: ChannexPropertyScoreResource['relationships'] & {
+  relationships?: ChannexPropertyScoreResource["relationships"] & {
     ota_scores?: Array<{
       data: ChannexOtaScoreResource;
     }>;
   };
 };
 
-export type ChannexAvailabilityRuleType = 'close_out' | 'availability_offset' | 'max_availability';
+export type ChannexAvailabilityRuleType =
+  | "close_out"
+  | "availability_offset"
+  | "max_availability";
 
 export type ChannexAvailabilityRuleResource = {
   id: string;
-  type: 'channel_availability_rule';
+  type: "channel_availability_rule";
   attributes: {
     id: string;
     title: string;
@@ -982,7 +1010,7 @@ export type ChannexAvailabilityRuleResource = {
     property?: {
       data: {
         id: string;
-        type: 'property';
+        type: "property";
       };
     };
   };
@@ -1004,14 +1032,15 @@ export type ChannexCreateAvailabilityRulePayload = {
   channel_availability_rule: ChannexAvailabilityRuleWritePayload;
 };
 
-export type ChannexUpdateAvailabilityRulePayload = ChannexCreateAvailabilityRulePayload;
+export type ChannexUpdateAvailabilityRulePayload =
+  ChannexCreateAvailabilityRulePayload;
 
 export type ChannexStripeTokenResponse = {
   token: string;
 };
 
 export type ChannexPaymentConnectPayload = {
-  provider: 'stripe';
+  provider: "stripe";
   title: string;
   redirect_url: string;
 };
@@ -1022,7 +1051,7 @@ export type ChannexPaymentConnectResponse = {
 
 export type ChannexPaymentProviderResource = {
   id: string;
-  type: 'payment_provider';
+  type: "payment_provider";
   attributes: {
     id: string;
     title: string;
@@ -1048,7 +1077,11 @@ export type ChannexPaymentUpdateProviderPayload = {
   };
 };
 
-export type ChannexPaymentTransactionType = 'charge' | 'refund' | 'pre_auth' | 'void';
+export type ChannexPaymentTransactionType =
+  | "charge"
+  | "refund"
+  | "pre_auth"
+  | "void";
 
 export type ChannexPaymentTransaction = {
   id: string;
@@ -1068,15 +1101,15 @@ export type ChannexPaymentTransaction = {
 };
 
 export type ChannexPaymentStatus =
-  | 'charged'
-  | 'refunded'
-  | 'pre_authorized'
-  | 'cancelled'
-  | 'partially_refunded';
+  | "charged"
+  | "refunded"
+  | "pre_authorized"
+  | "cancelled"
+  | "partially_refunded";
 
 export type ChannexPaymentResource = {
   id: string;
-  type: 'payment';
+  type: "payment";
   attributes: {
     id: string;
     status: ChannexPaymentStatus;
@@ -1092,7 +1125,7 @@ export type ChannexPaymentResource = {
     users?: {
       data: Array<{
         id: string;
-        type: 'user';
+        type: "user";
         attributes?: {
           id: string;
           name?: string;
@@ -1103,7 +1136,7 @@ export type ChannexPaymentResource = {
     booking?: {
       data: {
         id: string;
-        type: 'booking';
+        type: "booking";
         attributes?: {
           id: string;
           reference?: string;
@@ -1130,7 +1163,7 @@ export type ChannexPaymentTransactionsQueryPayload = {
     limit?: number;
   };
   order?: {
-    inserted_at?: 'asc' | 'desc';
+    inserted_at?: "asc" | "desc";
   };
   filter?: Record<string, unknown>;
 };

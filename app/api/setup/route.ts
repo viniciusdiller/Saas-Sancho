@@ -7,7 +7,7 @@ export async function GET() {
     const db = getDb();
 
     // 1. Sincroniza o banco e recria as tabelas (apagando dados velhos)
-    await db.sequelize.sync({ alter: true });
+    await db.sequelize.sync({ force: true });
 
     // 2. Cria a Pousada Viva Mar
     const [tenant] = await db.Tenant.findOrCreate({
@@ -19,18 +19,63 @@ export async function GET() {
       },
     });
 
-    // 3. Cria o Quarto
-    const [room] = await db.Room.findOrCreate({
-      where: { localRoomId: "vm-bangalow-01" },
-      defaults: {
-        localRoomId: "vm-bangalow-01",
-        tenantId: tenant.id,
-        name: "Bangalô Vista Mar",
-        maxGuests: 4,
-        status: "active",
-        channexRoomTypeId: "mock-channex-id",
+    // 3. Criação da lista completa de quartos da Viva Mar
+    const quartosParaCriar = [
+      {
+        id: "vm-standard",
+        nome: "Apartamento Standard",
+        hospedes: 2,
+        preco: 350.0,
+        qtd: 1,
       },
-    });
+      {
+        id: "vm-superior",
+        nome: "Apartamento Superior",
+        hospedes: 2,
+        preco: 450.0,
+        qtd: 5,
+      },
+      {
+        id: "vm-triplo-superior",
+        nome: "Apartamento Triplo Superior",
+        hospedes: 3,
+        preco: 550.0,
+        qtd: 4,
+      },
+      {
+        id: "vm-duplo-deluxe",
+        nome: "Apartamento Duplo Deluxe",
+        hospedes: 2,
+        preco: 650.0,
+        qtd: 4,
+      },
+      {
+        id: "vm-triplo-master",
+        nome: "Apartamento Triplo Master",
+        hospedes: 3,
+        preco: 750.0,
+        qtd: 4,
+      },
+    ];
+
+    const createdRooms = await Promise.all(
+      quartosParaCriar.map((q) =>
+        db.Room.findOrCreate({
+          where: { localRoomId: q.id },
+          defaults: {
+            localRoomId: q.id,
+            tenantId: tenant.id,
+            name: q.nome,
+            maxGuests: q.hospedes,
+            price: q.preco,
+            quantity: q.qtd, // <--- A QUANTIDADE SALVA NO BANCO AQUI!
+            status: "active",
+            channexRoomTypeId: `channex-${q.id}`,
+          },
+        }),
+      ),
+    );
+    const room = createdRooms[0][0];
 
     // 4. NOVO: Cria o Usuário (Cliente que está fazendo a reserva)
     const [user] = await db.User.findOrCreate({
