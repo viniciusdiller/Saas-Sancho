@@ -21,7 +21,7 @@ function mapRoom(room: InstanceType<ReturnType<typeof getDb>["Room"]>): Room {
     name: room.name,
     maxGuests: room.maxGuests,
     status: room.status,
-    price: room.price,
+    price: Number(room.price),
     quantity: room.quantity,
   };
 }
@@ -229,6 +229,7 @@ export async function createExpense(
 
   return mapExpense(expense);
 }
+
 export async function getUnifiedInventory(tenantId: number) {
   const [roomList, reservationList, expenseList] = await Promise.all([
     getRooms(tenantId),
@@ -242,4 +243,26 @@ export async function getUnifiedInventory(tenantId: number) {
     reservations: reservationList,
     expenses: expenseList,
   };
+}
+
+export async function updateRoomPrice(
+  tenantId: number,
+  localRoomId: string,
+  newPrice: number,
+) {
+  const { Room } = getDb();
+
+  const room = await Room.findOne({
+    where: { tenantId, localRoomId },
+  });
+
+  if (!room) {
+    throw new Error("Quarto não encontrado para esta pousada.");
+  }
+
+  await room.update({
+    price: newPrice,
+  });
+
+  return mapRoom(room);
 }

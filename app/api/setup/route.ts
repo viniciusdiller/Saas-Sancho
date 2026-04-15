@@ -25,37 +25,37 @@ export async function GET() {
         id: "vm-standard",
         nome: "Apartamento Standard",
         hospedes: 2,
-        preco: 350.0,
+        preco: 240.0,
         qtd: 1,
       },
       {
         id: "vm-superior",
         nome: "Apartamento Superior",
         hospedes: 2,
-        preco: 450.0,
+        preco: 280.0,
         qtd: 5,
       },
       {
         id: "vm-triplo-superior",
         nome: "Apartamento Triplo Superior",
         hospedes: 3,
-        preco: 550.0,
+        preco: 350.0,
         qtd: 4,
-      },
+      }, // Valor estimado
       {
         id: "vm-duplo-deluxe",
         nome: "Apartamento Duplo Deluxe",
         hospedes: 2,
-        preco: 650.0,
+        preco: 320.0,
         qtd: 4,
       },
       {
         id: "vm-triplo-master",
         nome: "Apartamento Triplo Master",
         hospedes: 3,
-        preco: 750.0,
+        preco: 400.0,
         qtd: 4,
-      },
+      }, // Valor estimado
     ];
 
     const createdRooms = await Promise.all(
@@ -68,7 +68,7 @@ export async function GET() {
             name: q.nome,
             maxGuests: q.hospedes,
             price: q.preco,
-            quantity: q.qtd, // <--- A QUANTIDADE SALVA NO BANCO AQUI!
+            quantity: q.qtd,
             status: "active",
             channexRoomTypeId: `channex-${q.id}`,
           },
